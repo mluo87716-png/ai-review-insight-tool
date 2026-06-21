@@ -8,31 +8,52 @@
   </head>
   <body>
     <main class="page">
+      <header class="topbar">
+        <div>
+          <strong>AI Review Insight Tool</strong>
+          <span>Consumer review ops workspace</span>
+        </div>
+        <nav aria-label="Project links">
+          <a href="https://github.com/mluo87716-png/ai-review-insight-tool">README</a>
+          <a href="https://github.com/mluo87716-png/ai-review-insight-tool/blob/main/output/insight_report.md">样例报告</a>
+          <a href="https://github.com/mluo87716-png/ai-review-insight-tool/blob/main/docs/resume-summary.md">简历描述</a>
+        </nav>
+      </header>
+
       <section class="hero">
         <div>
           <p class="eyebrow">AI Product Operations Demo</p>
           <h1>AI Review Insight Tool</h1>
-          <p>把消费者评论转化为运营洞察、内容选题和复盘指标。</p>
+          <p>把消费者评论转化为可复核、可导出、可进入周报和内容排期的运营洞察。</p>
+          <div class="hero-tags" aria-label="Core capabilities">
+            <span>评论情绪识别</span>
+            <span>高频痛点归类</span>
+            <span>内容选题生成</span>
+            <span>人工复核闭环</span>
+          </div>
         </div>
         <div class="metrics">
-          <div><strong id="reviewCount">25</strong><span>评论样本</span></div>
-          <div><strong id="painCount">6</strong><span>高频主题</span></div>
-          <div><strong id="topicCount">4</strong><span>选题建议</span></div>
-          <div><strong id="adoptionScore">82</strong><span>洞察可采纳分</span></div>
+          <div><span>评论样本</span><strong id="reviewCount">25</strong></div>
+          <div><span>高频主题</span><strong id="painCount">6</strong></div>
+          <div><span>选题建议</span><strong id="topicCount">4</strong></div>
+          <div><span>洞察可采纳分</span><strong id="adoptionScore">82</strong></div>
         </div>
       </section>
 
       <section class="workflow">
-        <div><strong>1 评论导入</strong><span>CSV / 用户原话</span></div>
-        <div><strong>2 AI 分析</strong><span>情绪 / 主题 / 痛点</span></div>
-        <div><strong>3 人工复核</strong><span>采纳 / 修改 / 不用</span></div>
-        <div><strong>4 运营转化</strong><span>周报 / Brief / 内容选题</span></div>
+        <div><span>01</span><strong>评论导入</strong><small>CSV / 用户原话</small></div>
+        <div><span>02</span><strong>AI 分析</strong><small>情绪 / 主题 / 痛点</small></div>
+        <div><span>03</span><strong>人工复核</strong><small>采纳 / 修改 / 不用</small></div>
+        <div><span>04</span><strong>运营转化</strong><small>周报 / Brief / 内容选题</small></div>
       </section>
 
       <section class="workspace">
         <aside class="panel">
           <div class="panel-title">
-            <h2>评论输入</h2>
+            <div>
+              <p class="section-kicker">Input</p>
+              <h2>评论输入</h2>
+            </div>
             <button id="loadSample" type="button">加载示例</button>
           </div>
           <label class="file-control">
@@ -45,7 +66,10 @@
 
         <section class="panel">
           <div class="panel-title">
-            <h2>运营洞察看板</h2>
+            <div>
+              <p class="section-kicker">Output</p>
+              <h2>运营洞察看板</h2>
+            </div>
             <span class="badge">HR 可读版</span>
           </div>
           <div class="grid">
