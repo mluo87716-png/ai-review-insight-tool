@@ -66,14 +66,15 @@ h1 {
 
 .metrics {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 12px;
 }
 
 .metrics div,
 .panel,
 .grid article,
-.advice {
+.advice,
+.workflow div {
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--surface);
@@ -92,8 +93,35 @@ h1 {
 
 .metrics span,
 li,
-.advice p {
+.advice p,
+.workflow span {
   color: var(--muted);
+}
+
+.workflow {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.workflow div {
+  padding: 14px 16px;
+}
+
+.workflow strong,
+.workflow span {
+  display: block;
+}
+
+.workflow strong {
+  margin-bottom: 5px;
+  color: var(--blue);
+  font-size: 15px;
+}
+
+.workflow span {
+  font-size: 13px;
 }
 
 .workspace {
@@ -191,11 +219,16 @@ li {
   line-height: 1.7;
 }
 
+.advice button {
+  margin-top: 12px;
+}
+
 @media (max-width: 880px) {
   .hero,
   .workspace,
   .metrics,
-  .grid {
+  .grid,
+  .workflow {
     grid-template-columns: 1fr;
   }
 }

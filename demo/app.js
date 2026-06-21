@@ -13,6 +13,8 @@ const sentimentList = document.querySelector("#sentimentList");
 const themeList = document.querySelector("#themeList");
 const painList = document.querySelector("#painList");
 const contentList = document.querySelector("#contentList");
+const sellingList = document.querySelector("#sellingList");
+const metricList = document.querySelector("#metricList");
 const adviceText = document.querySelector("#adviceText");
 const reviewInput = document.querySelector("#reviewInput");
 
@@ -29,6 +31,7 @@ function analyze() {
   document.querySelector("#reviewCount").textContent = reviews.length;
   document.querySelector("#painCount").textContent = "6";
   document.querySelector("#topicCount").textContent = "4";
+  document.querySelector("#adoptionScore").textContent = Math.min(92, 70 + positive.length * 2);
 
   renderList(sentimentList, [
     `正面：${positive.length} 条，集中在成分透明、肤感和包装`,
@@ -48,6 +51,18 @@ function analyze() {
     "公众号：从用户评论看功效表达机会",
     "直播间：把高频痛点整理成 FAQ，降低购买顾虑",
   ]);
+  renderList(sellingList, [
+    "成分透明：适合放在详情页首屏和种草标题",
+    "温和安心：适合承接敏感肌用户顾虑",
+    "包装高级：适合礼赠场景和视觉内容",
+    "真实效果：适合用用户原话做信任背书",
+  ]);
+  renderList(metricList, [
+    "洞察采纳率：目标 30%+",
+    "内容选题转化率：目标 20%+",
+    "人工修正率：目标低于 40%",
+    "7 日复用率：目标 25%+",
+  ]);
   adviceText.textContent =
     "建议优先优化客服响应、价格机制说明和敏感肌适用信息；内容侧强化成分透明、温和安心和真实效果反馈，把用户评论转化为详情页卖点和种草选题。";
 }
@@ -58,6 +73,14 @@ document.querySelector("#loadSample").addEventListener("click", () => {
 });
 
 document.querySelector("#analyzeButton").addEventListener("click", analyze);
+document.querySelector("#copySummary").addEventListener("click", async () => {
+  const summary = `评论洞察总结：${adviceText.textContent}`;
+  await navigator.clipboard.writeText(summary);
+  document.querySelector("#copySummary").textContent = "已复制";
+  setTimeout(() => {
+    document.querySelector("#copySummary").textContent = "复制周报总结";
+  }, 1200);
+});
 
 reviewInput.value = sampleReviews.join("\n");
 analyze();
