@@ -66,6 +66,8 @@ ai-review-insight-tool/
     └── app.js
 ```
 
+说明：`demo/` 是本地演示版本；`docs/index.html` 是用于 GitHub Pages 在线展示的版本。
+
 ## 快速开始
 
 ### 1. 演示模式，无需 API Key
@@ -123,6 +125,7 @@ Demo 展示评论输入、情绪统计、痛点归类、卖点提取、内容选
 | `output/insight_report.md` | 给运营/品牌经理看的 Markdown 洞察报告 |
 | `output/insight_data.json` | 给后续看板、后台或产品原型使用的结构化数据 |
 | `demo/index.html` | 给 HR 或面试官快速理解项目价值的本地 Demo，支持上传和导出 |
+| `docs/index.html` | GitHub Pages 在线 Demo 入口 |
 
 ## 产品运营交付物
 
