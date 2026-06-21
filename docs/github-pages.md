@@ -7,7 +7,7 @@
 ## 推荐设置
 
 1. 打开 GitHub 仓库：
-   `https://github.com/mluo87716-png/ai-review-insight-tool`
+   `https://github.com/Sophia7877/ai-review-insight-tool`
 
 2. 进入：
    `Settings` -> `Pages`
@@ -28,8 +28,8 @@
 如果 GitHub Pages 开启成功，可以在简历中写：
 
 ```text
-GitHub: github.com/mluo87716-png/ai-review-insight-tool
-Demo: mluo87716-png.github.io/ai-review-insight-tool
+GitHub: github.com/Sophia7877/ai-review-insight-tool
+Demo: Sophia7877.github.io/ai-review-insight-tool
 ```
 
 如果没有开启 Pages，只写 GitHub 仓库链接也可以。
