@@ -28,6 +28,7 @@ from datetime import datetime
 ROOT_DIR = os.path.dirname(__file__)
 DEFAULT_DATA_PATH = os.path.join(ROOT_DIR, "data", "sample_reviews.csv")
 DEFAULT_OUTPUT_PATH = os.path.join(ROOT_DIR, "output", "insight_report.md")
+DEFAULT_JSON_OUTPUT_PATH = os.path.join(ROOT_DIR, "output", "insight_data.json")
 
 # 用于demo模式的关键词词典（无需调用AI，纯本地规则，方便没有API Key时也能跑通整个流程）
 THEME_KEYWORDS = {
@@ -61,7 +62,9 @@ def classify_review_demo(text, rating):
     matched_themes = [theme for theme, kws in THEME_KEYWORDS.items() if any(k in text for k in kws)]
     if not matched_themes:
         matched_themes = ["其他"]
-    return sentiment, matched_themes
+
+    pain_point = text if sentiment == "负面" else "无"
+    return sentiment, matched_themes, pain_point
 
 
 def classify_review_ai(client, model, text, rating):
@@ -118,7 +121,7 @@ def generate_summary_demo(sentiment_counter, theme_counter, sample_pain_points):
     )
 
 
-def run(demo: bool, input_path: str, output_path: str):
+def run(demo: bool, input_path: str, output_path: str, json_output_path: str):
     reviews = load_reviews(input_path)
     if not reviews:
         raise ValueError("输入文件中没有可分析的评论数据。")
@@ -126,6 +129,7 @@ def run(demo: bool, input_path: str, output_path: str):
     sentiment_counter = Counter()
     theme_counter = Counter()
     pain_points = []
+    analyzed_reviews = []
 
     client = None
     model = os.environ.get("ANTHROPIC_MODEL", "claude-3-5-sonnet-latest")
@@ -145,17 +149,29 @@ def run(demo: bool, input_path: str, output_path: str):
     for row in reviews:
         text, rating = row["review_text"], row["rating"]
         if demo:
-            sentiment, themes = classify_review_demo(text, rating)
-            pain_point = text if sentiment == "负面" else None
+            sentiment, themes, pain_point = classify_review_demo(text, rating)
         else:
             sentiment, themes, pain_point = classify_review_ai(client, model, text, rating)
-            pain_point = None if pain_point == "无" else pain_point
+
+        normalized_pain_point = None if pain_point == "无" else pain_point
 
         sentiment_counter[sentiment] += 1
         for t in themes:
             theme_counter[t] += 1
-        if pain_point:
-            pain_points.append(pain_point)
+        if normalized_pain_point:
+            pain_points.append(normalized_pain_point)
+
+        analyzed_reviews.append(
+            {
+                "review_id": row.get("review_id", ""),
+                "product_name": row.get("product_name", ""),
+                "rating": rating,
+                "review_text": text,
+                "sentiment": sentiment,
+                "themes": themes,
+                "pain_point": normalized_pain_point or "无",
+            }
+        )
 
     if demo:
         summary = generate_summary_demo(sentiment_counter, theme_counter, pain_points)
@@ -163,7 +179,32 @@ def run(demo: bool, input_path: str, output_path: str):
         summary = generate_summary_ai(client, model, sentiment_counter, theme_counter, pain_points)
 
     content_topics = generate_content_topics(theme_counter, pain_points)
-    write_report(reviews, sentiment_counter, theme_counter, pain_points, summary, content_topics, demo, output_path)
+    action_items = generate_action_items(theme_counter, pain_points)
+    metrics = generate_metric_recommendations()
+    write_report(
+        reviews,
+        sentiment_counter,
+        theme_counter,
+        pain_points,
+        summary,
+        content_topics,
+        action_items,
+        metrics,
+        demo,
+        output_path,
+    )
+    write_json_output(
+        analyzed_reviews,
+        sentiment_counter,
+        theme_counter,
+        pain_points,
+        summary,
+        content_topics,
+        action_items,
+        metrics,
+        demo,
+        json_output_path,
+    )
 
 
 def generate_content_topics(theme_counter, pain_points):
@@ -183,7 +224,45 @@ def generate_content_topics(theme_counter, pain_points):
     return topics[:5]
 
 
-def write_report(reviews, sentiment_counter, theme_counter, pain_points, summary, content_topics, demo, output_path):
+def generate_action_items(theme_counter, pain_points):
+    """生成可直接进入运营复盘的动作建议。"""
+    actions = []
+    if theme_counter.get("客服体验", 0):
+        actions.append("客服侧：建立泛红、过敏、退换货等高频问题的标准回复话术，缩短首次响应时间。")
+    if theme_counter.get("物流配送", 0):
+        actions.append("履约侧：在大促期间前置物流时效说明，减少用户对等待时间的不确定感。")
+    if theme_counter.get("价格/性价比", 0):
+        actions.append("电商侧：将组合装、小样、赠品和价格机制做成对比卡，降低用户决策压力。")
+    if theme_counter.get("产品效果", 0):
+        actions.append("商品侧：在详情页增加适用肤质、使用周期和敏感肌提示，减少效果预期偏差。")
+    if theme_counter.get("成分透明度", 0):
+        actions.append("内容侧：强化成分透明、温和安心和用户真实反馈，作为种草内容主线。")
+    if not actions:
+        actions.append("运营侧：先扩大样本量，再判断是否需要进入产品或内容优化。")
+    return actions
+
+
+def generate_metric_recommendations():
+    return [
+        {"name": "洞察采纳率", "target": "30%+", "definition": "生成洞察中被周报、Brief 或复盘采用的比例"},
+        {"name": "内容选题转化率", "target": "20%+", "definition": "AI 生成选题中被实际发布或进入排期的比例"},
+        {"name": "人工修正率", "target": "<40%", "definition": "需要运营人员重写或大幅修改的输出比例"},
+        {"name": "7日复用率", "target": "25%+", "definition": "同一运营人员 7 天内再次使用工具的比例"},
+    ]
+
+
+def write_report(
+    reviews,
+    sentiment_counter,
+    theme_counter,
+    pain_points,
+    summary,
+    content_topics,
+    action_items,
+    metrics,
+    demo,
+    output_path,
+):
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     lines = []
     lines.append("# AI消费者评论洞察报告")
@@ -216,12 +295,15 @@ def write_report(reviews, sentiment_counter, theme_counter, pain_points, summary
     for topic in content_topics:
         lines.append(f"- {topic}")
     lines.append("")
-    lines.append("## 六、运营指标建议")
+    lines.append("## 六、运营动作建议")
     lines.append("")
-    lines.append("- 洞察采纳率：生成洞察中被周报、Brief 或复盘采用的比例")
-    lines.append("- 内容选题转化率：AI 生成选题中被实际发布或进入排期的比例")
-    lines.append("- 人工修正率：需要运营人员重写或大幅修改的输出比例")
-    lines.append("- 7日复用率：同一运营人员7天内再次使用工具的比例")
+    for action in action_items:
+        lines.append(f"- {action}")
+    lines.append("")
+    lines.append("## 七、运营指标建议")
+    lines.append("")
+    for metric in metrics:
+        lines.append(f"- {metric['name']}（目标 {metric['target']}）：{metric['definition']}")
     lines.append("")
 
     with open(output_path, "w", encoding="utf-8") as f:
@@ -232,10 +314,42 @@ def write_report(reviews, sentiment_counter, theme_counter, pain_points, summary
     print(summary)
 
 
+def write_json_output(
+    analyzed_reviews,
+    sentiment_counter,
+    theme_counter,
+    pain_points,
+    summary,
+    content_topics,
+    action_items,
+    metrics,
+    demo,
+    json_output_path,
+):
+    os.makedirs(os.path.dirname(json_output_path), exist_ok=True)
+    payload = {
+        "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M"),
+        "mode": "demo" if demo else "ai",
+        "sample_size": len(analyzed_reviews),
+        "sentiment_distribution": dict(sentiment_counter),
+        "theme_distribution": dict(theme_counter),
+        "representative_pain_points": pain_points[:8],
+        "summary": summary,
+        "content_topics": content_topics,
+        "action_items": action_items,
+        "metrics": metrics,
+        "reviews": analyzed_reviews,
+    }
+    with open(json_output_path, "w", encoding="utf-8") as f:
+        json.dump(payload, f, ensure_ascii=False, indent=2)
+    print(f"结构化数据已生成：{json_output_path}")
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="AI消费者评论洞察分析工具")
     parser.add_argument("--demo", action="store_true", help="使用本地规则演示模式，无需API Key")
     parser.add_argument("--input", default=DEFAULT_DATA_PATH, help="输入CSV路径，默认 data/sample_reviews.csv")
     parser.add_argument("--output", default=DEFAULT_OUTPUT_PATH, help="输出报告路径，默认 output/insight_report.md")
+    parser.add_argument("--json-output", default=DEFAULT_JSON_OUTPUT_PATH, help="输出JSON路径，默认 output/insight_data.json")
     args = parser.parse_args()
-    run(demo=args.demo, input_path=args.input, output_path=args.output)
+    run(demo=args.demo, input_path=args.input, output_path=args.output, json_output_path=args.json_output)

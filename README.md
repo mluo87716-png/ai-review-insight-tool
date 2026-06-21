@@ -31,6 +31,7 @@
 | 代表性痛点提取 | 抽取负面评论中的核心问题 | 支持周报、复盘和产品优化 |
 | AI 洞察总结 | 生成面向品牌经理/运营团队的业务总结 | 降低人工整理成本 |
 | 内容选题建议 | 将评论转化为小红书、抖音、公众号选题方向 | 连接用户反馈和内容增长 |
+| 结构化 JSON 输出 | 输出可接入看板/后台的数据结果 | 展示产品化和工程化意识 |
 | 指标框架设计 | 定义洞察采纳率、人工修正率、复用率等指标 | 评估 AI 工具是否有业务价值 |
 | 运营复盘案例 | 输出从评论到动作的完整 case study | 让项目更像真实业务交付 |
 
@@ -44,7 +45,11 @@ ai-review-insight-tool/
 ├── data/
 │   └── sample_reviews.csv
 ├── output/
-│   └── insight_report.md
+│   ├── insight_report.md
+│   └── insight_data.json
+├── .github/
+│   └── workflows/
+│       └── ci.yml
 ├── docs/
 │   ├── prd.md
 │   ├── user-persona.md
@@ -73,6 +78,7 @@ python analyze_reviews.py --demo
 
 ```text
 output/insight_report.md
+output/insight_data.json
 ```
 
 ### 2. AI 模式，调用 Claude API
@@ -90,7 +96,17 @@ export ANTHROPIC_MODEL="claude-3-5-sonnet-latest"
 python analyze_reviews.py
 ```
 
-### 3. 打开产品 Demo
+### 3. 自定义输入和输出
+
+```bash
+python analyze_reviews.py \
+  --demo \
+  --input data/sample_reviews.csv \
+  --output output/insight_report.md \
+  --json-output output/insight_data.json
+```
+
+### 4. 打开产品 Demo
 
 直接打开：
 
@@ -100,12 +116,21 @@ demo/index.html
 
 Demo 展示评论输入、情绪统计、痛点归类、卖点提取和内容选题建议。
 
+## 输出说明
+
+| 文件 | 用途 |
+| --- | --- |
+| `output/insight_report.md` | 给运营/品牌经理看的 Markdown 洞察报告 |
+| `output/insight_data.json` | 给后续看板、后台或产品原型使用的结构化数据 |
+| `demo/index.html` | 给 HR 或面试官快速理解项目价值的本地 Demo |
+
 ## 产品运营交付物
 
 - [PRD](docs/prd.md)：产品定位、MVP 功能和成功标准
 - [用户画像](docs/user-persona.md)：品牌运营、电商运营、内容运营三类用户
 - [AI 工作流](docs/ai-workflow.md)：评论导入到人工复核的完整流程
 - [指标体系](docs/metrics-framework.md)：北极星指标、漏斗指标和质量指标
+- [CLI 使用说明](docs/cli-usage.md)：命令行参数、输入格式和 JSON 输出结构
 - [竞品分析](docs/competitor-analysis.md)：对比 ChatGPT、飞书多维表格、蝉妈妈/灰豚等工具
 - [案例复盘](docs/case-study.md)：从 25 条评论到运营动作的完整样例
 - [产品路线图](docs/product-roadmap.md)：30 天迭代计划和版本规划
@@ -122,6 +147,8 @@ Demo 展示评论输入、情绪统计、痛点归类、卖点提取和内容选
 ```
 
 完整报告见：[`output/insight_report.md`](output/insight_report.md)
+
+结构化数据见：[`output/insight_data.json`](output/insight_data.json)
 
 ## 简历可用描述
 
