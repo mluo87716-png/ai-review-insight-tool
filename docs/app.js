@@ -68,11 +68,12 @@ function analyze() {
   const metrics = [
     "洞察采纳率：目标 30%+",
     "内容选题转化率：目标 20%+",
+    "详情页优化采纳率：目标 20%+",
+    "客服 FAQ 覆盖率：目标 30%+",
     "人工修正率：目标低于 40%",
-    "7 日复用率：目标 25%+",
   ];
   const advice =
-    "建议优先优化客服响应、价格机制说明和敏感肌适用信息；内容侧强化成分透明、温和安心和真实效果反馈，把用户评论转化为详情页卖点和种草选题。";
+    "建议把成分透明、温和安心和真实效果反馈作为主要购买理由放大；同时补齐价格机制、敏感肌适用和客服响应说明，把用户疑虑转化为详情页模块、种草选题和客服 FAQ，降低下单前的决策阻碍。";
 
   document.querySelector("#reviewCount").textContent = reviews.length;
   document.querySelector("#painCount").textContent = "6";
@@ -99,6 +100,8 @@ function analyze() {
   currentReport = {
     sample_size: reviews.length,
     sentiment: { positive: positive.length, neutral, negative: negative.length },
+    purchase_motivations: ["成分透明", "温和安心", "真实效果", "包装高级"],
+    conversion_barriers: ["价格上涨", "敏感肌风险", "客服响应慢", "物流体验差"],
     representative_pain_points: negative.slice(0, 4),
     content_topics: contentTopics,
     selling_points: sellingPoints,

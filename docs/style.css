@@ -142,7 +142,9 @@ h1 {
 .panel,
 .grid article,
 .advice,
-.workflow div {
+.workflow div,
+.conversion-map,
+.conversion-grid article {
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--surface);
@@ -223,6 +225,52 @@ li,
 
 .workflow div {
   padding: 15px 16px;
+}
+
+.conversion-map {
+  margin-bottom: 20px;
+  padding: 20px;
+  background: linear-gradient(180deg, #ffffff 0%, #f7fbff 100%);
+}
+
+.conversion-map .panel-title {
+  margin-bottom: 16px;
+}
+
+.conversion-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.conversion-grid article {
+  padding: 16px;
+}
+
+.conversion-grid span,
+.conversion-grid strong,
+.conversion-grid p {
+  display: block;
+}
+
+.conversion-grid span {
+  margin-bottom: 8px;
+  color: var(--blue-2);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.conversion-grid strong {
+  margin-bottom: 9px;
+  color: var(--text);
+  line-height: 1.45;
+}
+
+.conversion-grid p {
+  margin-bottom: 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.6;
 }
 
 .workflow strong,
@@ -416,7 +464,8 @@ li {
   .metrics,
   .grid,
   .workflow,
-  .scenario-strip {
+  .scenario-strip,
+  .conversion-grid {
     grid-template-columns: 1fr;
   }
 }
