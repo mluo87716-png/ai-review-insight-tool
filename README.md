@@ -186,6 +186,7 @@ Demo 展示评论输入、情绪统计、痛点归类、卖点提取、内容选
 ## 产品运营交付物
 
 - [PRD](docs/prd.md)：产品定位、MVP 功能和成功标准
+- [English PRD](docs/prd-en.md)：product positioning, MVP scope, user journey, metrics, and roadmap
 - [用户画像](docs/user-persona.md)：品牌运营、电商运营、内容运营三类用户
 - [AI 工作流](docs/ai-workflow.md)：评论导入到人工复核的完整流程
 - [指标体系](docs/metrics-framework.md)：北极星指标、漏斗指标和质量指标
